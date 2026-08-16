@@ -29,14 +29,15 @@
 ## 📝 Upcoming Development Backlog
 
 ### Phase 1: Specification & Design
-- [ ] Receive initial idea prompt from Core Stakeholders via `/startcycle`.
-- [ ] Draft comprehensive Technical Specification (`production_artifacts/Technical_Specification.md`).
-- [ ] Review architecture with Nachiket & Tejasva.
-- [ ] Secure stakeholder approval.
+- [x] Receive initial idea prompt from Core Stakeholders via `/startcycle`.
+- [x] Draft comprehensive Technical Specification (`production_artifacts/Technical_Specification.md`).
+- [x] Review architecture with Nachiket & Tejasva.
+- [x] Secure stakeholder approval.
 
-### Phase 2: Implementation & Assembly
-- [ ] Scaffold backend API services in `app_build/`.
-- [ ] Build responsive modern frontend UI in `app_build/`.
+### Phase 2: Implementation#### Track B (Tejasva)
+- [x] Scaffold `app/api/career/*`
+- [x] Scaffold `app/api/chatbot/*`
+- [x] Scaffold `app/api/reconciliation/*` (WhatsApp & LinkedIn) `app_build/`.
 - [ ] Integrate state management and client-server communication.
 
 ### Phase 3: Verification & Quality Assurance
@@ -53,3 +54,5 @@
 
 ## 📜 Activity Log
 - **2026-08-16**: Initialized agent governance structure, workflows, skills, stakeholder breakdown, and tracking systems.
+- **2026-08-16**: Migrated LinkedIn scraping provider from Proxycurl to Apify as per Track B specifications.
+- **2026-08-16**: Migrated LLM provider from Claude to Groq API. Chatbot mock removed and fully wired up.
