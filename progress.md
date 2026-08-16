@@ -36,10 +36,11 @@
 - [ ] Secure stakeholder approval.
 
 ### Phase 2: Implementation & Assembly
-- [x] Track A: Scaffolded Auth & Application Pipeline backend API services (`app/api/auth/*`, `app/api/applications/*`).
-- [ ] Track B: (Pending)
-- [ ] Build responsive modern frontend UI.
-- [ ] Integrate state management and client-server communication.
+- [x] Track A: Scaffolded Auth, Application Pipeline, and Admin Dashboard API services (`app/api/auth/*`, `app/api/applications/*`, `app/api/dashboard/*`).
+- [x] Track A: Built responsive modern frontend UI (Login, Register, and Admin/Mentor/Student Portal shells).
+- [x] Track A: Integrated state management and client-server communication via native `fetch` and Next.js `cookies()`.
+- [ ] Track B: (Pending backend implementation for Career & Chatbot)
+- [ ] Track B: (Pending frontend integration for Career & Chatbot)
 
 ### Phase 3: Verification & Quality Assurance
 - [x] Run syntax validation (`@qa`).
