@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/middleware';
+import { requireRole } from '@/lib/auth/rbac';
 import { prisma } from '@/lib/db';
-import { employmentRecordSchema } from '@/lib/validation/schemas';
+import { EmploymentRecordSchema } from '@/lib/validation/career.schema';
 import { z } from 'zod';
 
 export async function POST(req: NextRequest) {
-  const authRes = await requireRole(req, ['ADMIN']);
-  if (authRes instanceof NextResponse) return authRes;
+  const authRes = await requireRole(['ADMIN']);
+  if (!authRes.authorized || !authRes.user) { return NextResponse.json({ error: authRes.error }, { status: 403 }); }
 
   try {
     const body = await req.json();
-    const data = employmentRecordSchema.parse(body);
+    const data = EmploymentRecordSchema.parse(body);
 
     const record = await prisma.$transaction(async (tx) => {
       if (data.isCurrent) {
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(record);
   } catch (err: any) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.errors }, { status: 400 });
+      return NextResponse.json({ error: err.issues }, { status: 400 });
     }
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

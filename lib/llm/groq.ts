@@ -10,7 +10,7 @@ const getClient = () => {
   });
 };
 
-const MODEL = process.env.GROQ_MODEL || 'llama3-8b-8192';
+const MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
 
 export async function parseEmploymentReply(replyText: string) {
   try {

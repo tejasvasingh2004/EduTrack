@@ -13,7 +13,7 @@ export async function scrapeLinkedInProfile(linkedinUrl: string) {
   try {
     // Run the actor and wait for it to finish
     const run = await client.actor(actorId).call({
-      urls: [linkedinUrl] // Most Apify linkedin actors take 'urls' or 'profileUrls'
+      profiles: [linkedinUrl]
     });
 
     // Fetch the results from the default dataset

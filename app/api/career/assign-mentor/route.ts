@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/middleware';
+import { requireRole } from '@/lib/auth/rbac';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
@@ -9,8 +9,8 @@ const assignMentorSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const authRes = await requireRole(req, ['ADMIN']);
-  if (authRes instanceof NextResponse) return authRes;
+  const authRes = await requireRole(['ADMIN']);
+  if (!authRes.authorized || !authRes.user) { return NextResponse.json({ error: authRes.error }, { status: 403 }); }
 
   try {
     const body = await req.json();
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(record);
   } catch (err: any) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.errors }, { status: 400 });
+      return NextResponse.json({ error: err.issues }, { status: 400 });
     }
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

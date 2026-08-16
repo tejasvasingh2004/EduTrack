@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/middleware';
+import { requireRole } from '@/lib/auth/rbac';
 import { prisma } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
-  const authRes = await requireAuth(req);
-  if (authRes instanceof NextResponse) return authRes;
+  const authRes = await requireRole(['ADMIN', 'MENTOR', 'STUDENT']);
+  if (!authRes.authorized || !authRes.user) { return NextResponse.json({ error: authRes.error }, { status: 403 }); }
 
   const { searchParams } = new URL(req.url);
   const studentId = searchParams.get('studentId');
@@ -30,10 +30,10 @@ export async function GET(req: NextRequest) {
     const profile = await prisma.user.findUnique({
       where: { id: studentId },
       include: {
-        mentors: {
+        mentor: {
           include: { mentor: { select: { id: true, email: true } } }
         },
-        skillProgresses: {
+        skills: {
           orderBy: { createdAt: 'desc' }
         },
         employmentRecords: {

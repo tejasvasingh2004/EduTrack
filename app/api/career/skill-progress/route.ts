@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/middleware';
+import { requireRole } from '@/lib/auth/rbac';
 import { prisma } from '@/lib/db';
-import { skillProgressSchema } from '@/lib/validation/schemas';
+import { SkillProgressSchema } from '@/lib/validation/career.schema';
 import { z } from 'zod';
 
 export async function POST(req: NextRequest) {
-  const authRes = await requireRole(req, ['ADMIN', 'MENTOR']);
-  if (authRes instanceof NextResponse) return authRes;
+  const authRes = await requireRole(['ADMIN', 'MENTOR']);
+  if (!authRes.authorized || !authRes.user) { return NextResponse.json({ error: authRes.error }, { status: 403 }); }
 
   try {
     const body = await req.json();
-    const data = skillProgressSchema.parse(body);
+    const data = SkillProgressSchema.parse(body);
 
     if (authRes.user.role === 'MENTOR') {
        const assignment = await prisma.mentorStudent.findUnique({
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(record);
   } catch (err: any) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.errors }, { status: 400 });
+      return NextResponse.json({ error: err.issues }, { status: 400 });
     }
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
