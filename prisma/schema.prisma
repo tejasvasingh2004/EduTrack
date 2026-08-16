@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MENTOR
+  STUDENT
+  APPLICANT 
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WAITLISTED
+}
+
+enum ReconciliationStatus {
+  PENDING_SCRAPE
+  NO_CHANGE_SKIPPED
+  AWAITING_REPLY
+  CONFIRMED
+  NO_RESPONSE
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  phoneNumber   String?   @unique
+  role          Role      @default(APPLICANT)
+  linkedinUrl   String?
+  consentGiven  Boolean   @default(false)
+  consentAt     DateTime?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relationships
+  application           Application?
+  skills                SkillProgress[]
+  employmentRecords     EmploymentRecord[]
+  mentees               MentorStudent[]         @relation("MentorRelation")
+  mentor                MentorStudent?          @relation("StudentRelation")
+  chatbotQueries        ChatbotQuery[]
+  reconciliationAttempts ReconciliationAttempt[]
+  refreshTokens         RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique 
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Application {
+  id        String            @id @default(uuid())
+  status    ApplicationStatus @default(PENDING)
+  userId    String            @unique
+  user      User              @relation(fields: [userId], references: [id])
+  
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model MentorStudent {
+  mentorId  String
+  studentId String @unique 
+  
+  mentor    User   @relation("MentorRelation", fields: [mentorId], references: [id])
+  student   User   @relation("StudentRelation", fields: [studentId], references: [id])
+
+  @@id([mentorId, studentId])
+}
+
+model SkillProgress {
+  id        String   @id @default(uuid())
+  studentId String
+  skillName String
+  level     Int
+  
+  student   User     @relation(fields: [studentId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model EmploymentRecord {
+  id         String   @id @default(uuid())
+  studentId  String
+  jobTitle   String
+  company    String
+  salaryBand String?
+  isCurrent  Boolean  @default(true)
+  
+  student    User     @relation(fields: [studentId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ReconciliationAttempt {
+  id           String               @id @default(uuid())
+  studentId    String
+  status       ReconciliationStatus @default(PENDING_SCRAPE)
+  scheduledFor DateTime
+  respondedAt  DateTime?
+  
+  student      User                 @relation(fields: [studentId], references: [id])
+  createdAt    DateTime             @default(now())
+}
+
+model ChatbotQuery {
+  id        String   @id @default(uuid())
+  studentId String
+  prompt    String
+  response  String
+  
+  student   User     @relation(fields: [studentId], references: [id])
+  createdAt DateTime @default(now())
+}

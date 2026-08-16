@@ -13,8 +13,8 @@ Status: Draft v1 · Companion to `prd.md` · Last updated: 2026-08-16
 | Auth | JWT in HTTP-only cookie, custom middleware (no third-party auth provider) |
 | Validation | Zod on every API route |
 | Messaging | Twilio WhatsApp Business API |
-| LinkedIn data | Proxycurl / Bright Data (third-party scraping service) |
-| Reply parsing | LLM (Claude API) — free text → structured JSON |
+| LinkedIn data | Apify (third-party scraping service) |
+| Reply parsing | LLM (Groq API) — free text → structured JSON |
 | Styling | Tailwind (per `postcss.config.mjs`) |
 
 ## 2. System Architecture
@@ -35,8 +35,8 @@ flowchart TB
 
     subgraph Services["External Services"]
         Twilio["Twilio WhatsApp API"]
-        Proxy["Proxycurl / LinkedIn Scraper"]
-        LLM["Claude API - reply parsing + chatbot"]
+        Proxy["Apify / LinkedIn Scraper"]
+        LLM["Groq API - reply parsing + chatbot"]
     end
 
     DB[(PostgreSQL via Prisma)]
@@ -62,10 +62,10 @@ flowchart TB
 sequenceDiagram
     participant Cron as Scheduler (every 6mo)
     participant DB as PostgreSQL
-    participant Scraper as Proxycurl
+    participant Scraper as Apify
     participant Twilio as Twilio WhatsApp
     participant Ben as Beneficiary
-    participant LLM as Claude API
+    participant LLM as Groq API
 
     Cron->>DB: Find students placed >=6mo ago, due for refresh
     loop each due student
@@ -161,7 +161,7 @@ app/
 lib/
   auth/              -> jwt, cookies, RBAC middleware (shared, frozen after Phase 0)
   validation/        -> zod schemas (shared, frozen after Phase 0)
-  scraper/           -> proxycurl client
+  scraper/           -> apify client
   whatsapp/          -> twilio client + template senders
   llm/               -> reply-parsing prompt + client
 prisma/

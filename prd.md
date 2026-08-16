@@ -54,7 +54,7 @@ are actually funded and evaluated on.
 - 6 months after a student's placement date, and every 6 months thereafter, the
   system:
   1. Looks up the student's stored LinkedIn URL (captured at application/onboarding).
-  2. Calls a third-party scraping service (Proxycurl/Bright Data) to fetch current
+  2. Calls a third-party scraping service (Apify) to fetch current
      job title, company, location.
   3. Diffs scraped data against what's on file.
   4. **If nothing changed → no message is sent** (silent skip, logged).

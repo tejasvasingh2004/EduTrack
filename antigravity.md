@@ -57,7 +57,7 @@ see the accompanying prompt used to regenerate them. In short:
   areas: RBAC on every route, Zod validation on every input, consent checks
   before any scrape/message, N+1 query prevention on list endpoints.
 - `deploy_app.md` — deployment steps for this exact stack (Next.js + Prisma +
-  Postgres + Twilio + Proxycurl env vars).
+  Postgres + Twilio + Apify env vars).
 
 ## Workflows (`.agents/workflows/`)
 
