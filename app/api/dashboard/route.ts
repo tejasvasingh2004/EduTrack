@@ -6,8 +6,10 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {
-    const authError = await requireRole(req, ["ADMIN"]);
-    if (authError) return authError;
+    const authRes = await requireRole(["ADMIN"]);
+    if (!authRes.authorized || !authRes.user) {
+      return NextResponse.json({ error: authRes.error }, { status: 403 });
+    }
 
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get("page") || "1");

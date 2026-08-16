@@ -58,3 +58,5 @@
 - **2026-08-16**: Initialized agent governance structure, workflows, skills, stakeholder breakdown, and tracking systems.
 - **2026-08-16**: Migrated LinkedIn scraping provider from Proxycurl to Apify as per Track B specifications.
 - **2026-08-16**: Migrated LLM provider from Claude to Groq API. Chatbot mock removed and fully wired up.
+
+- **2026-08-16**: Fixed E2E blockers: installed missing lucide-react dependency, cleaned up unused FRONTEND_URL config, and corrected Twilio env variables.

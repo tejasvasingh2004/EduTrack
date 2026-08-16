@@ -55,7 +55,17 @@ export async function POST(req: NextRequest) {
         });
         results.push({ studentId: student.id, status: 'NO_CHANGE_SKIPPED' });
       } else {
-        const phone = (student as any).phoneNumber || '+1234567890';
+        const phone = student.phoneNumber;
+        if (!phone) {
+          console.warn(`Skipping WhatsApp message for ${student.email} - no phone number`);
+          await prisma.reconciliationAttempt.update({
+            where: { id: attempt.id },
+            data: { status: 'NO_RESPONSE' }
+          });
+          results.push({ studentId: student.id, status: 'SKIPPED_NO_PHONE' });
+          continue;
+        }
+
         await sendWhatsAppTemplate(phone, scrapedData.jobTitle, scrapedData.company);
 
         await prisma.reconciliationAttempt.update({
