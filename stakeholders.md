@@ -1,50 +1,72 @@
-# 👥 Project Stakeholders & Work Breakdown
+# Stakeholders — EduTrack
 
-## 📌 Project Overview
-**EduTrack** is an autonomous education tracking and student management platform developed under the autonomous multi-agent engineering workflow.
+Last updated: 2026-08-16
 
----
+## Team
 
-## 🏛️ Core Stakeholders
+| Name | Role in this build |
+|---|---|
+| **Nachiket** | Track A — Core platform (Auth, Applications, Dashboard) |
+| **Tejasva** | Track B — Career module + WhatsApp/LinkedIn reconciliation |
 
-### 1. Nachiket
-- **Role**: Project Lead & Primary Stakeholder / Product Owner
-- **Work & Responsibilities**:
-  - Sets overall vision, product goals, and project requirements.
-  - Final approval authority for technical specifications and system architecture.
-  - Reviews milestone deliverables, production artifacts, and deployment releases.
-  - Defines feature priority and business constraints.
+## Why this split
 
-### 2. Tejasva
-- **Role**: Co-Lead & Technical Evaluator / Reviewer
-- **Work & Responsibilities**:
-  - Reviews architecture designs and technical specifications alongside Nachiket.
-  - Validates user experience, feature completeness, and functional correctness.
-  - Participates in milestone sign-offs and acceptance testing.
-  - Provides feedback on roadmap progression and deployment readiness.
+Both tracks were chosen so each person owns a **disjoint set of files** after
+Phase 0 (see `hld.md` §5 for the folder map). The only genuinely shared file is
+`prisma/schema.prisma` — that's why it's built once, together, in Phase 0, and
+frozen (see rules below) so nobody edits it solo mid-build.
 
----
+## Phases
 
-## 🤖 Autonomous Development Team & Work Scopes
+### Phase 0 — Shared foundation (both, pair-built, ~day 1)
+Done together in one sitting to avoid any later schema disagreement:
+- `prisma/schema.prisma` — full schema (all models from `hld.md` §4)
+- `lib/auth/*` — JWT + cookie helpers, `requireAuth` / `requireRole` middleware
+- `lib/validation/*` — shared Zod base patterns
+- Project scaffold, env vars, DB migration
 
-| Agent Role | Title | Primary Work & Deliverables | Core Artifacts |
-| :--- | :--- | :--- | :--- |
-| **`@pm`** | Product Manager & Lead Architect | Requirement analysis, architectural design, creating rigorous Technical Specifications, approval coordination. | `production_artifacts/Technical_Specification.md`, `progress.md` |
-| **`@engineer`** | Full-Stack Engineer | Translating approved specs into clean, scalable backend and frontend code, scaffolding project structure. | `app_build/*` |
-| **`@qa`** | QA Engineer & Security Auditor | Rigorous code inspection, syntax verification, unhandled promise tracking, logic validation, vulnerability checks. | `bugs.md`, `app_build/*` fixes |
-| **`@devops`** | DevOps Master | Dependency resolution, local/cloud environment configuration, server runtime management, deployment reporting. | Server runtime, deploy logs, Local URL output |
+**Rule: once Phase 0 is merged, `schema.prisma` is frozen.** If either track
+needs a schema change afterward, open a PR, tag the other person, get a
+thumbs-up before merging — never push directly to it.
 
----
+### Phase 1 — Parallel build
 
-## 📋 RACI Matrix (Responsibility Assignment)
+**Nachiket — Track A**
+| Module | Files |
+|---|---|
+| Auth routes | `app/api/auth/*` |
+| Application pipeline | `app/api/applications/*` |
+| Admin dashboard | `app/api/dashboard/*` |
+| Admin/Mentor/Student portal shells (frontend) | `app/(admin)/*`, `app/(mentor)/*`, `app/(student)/*` base layouts |
 
-| Phase / Activity | Nachiket | Tejasva | `@pm` | `@engineer` | `@qa` | `@devops` |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Idea & Requirements** | **A** | **C** | **R** | **I** | **I** | **I** |
-| **Tech Spec Approval** | **A** | **A** | **R** | **I** | **C** | **C** |
-| **Code Implementation** | **I** | **I** | **C** | **R** | **I** | **I** |
-| **Quality Audit & Fixes**| **I** | **I** | **I** | **C** | **R** | **I** |
-| **Build & Deployment** | **I** | **I** | **I** | **I** | **C** | **R** |
-| **Final Acceptance** | **A** | **A** | **C** | **I** | **I** | **I** |
+**Tejasva — Track B**
+| Module | Files |
+|---|---|
+| Career tracking | `app/api/career/*` |
+| Chatbot mock | `app/api/chatbot/*` |
+| WhatsApp/LinkedIn reconciliation | `app/api/reconciliation/*`, `lib/scraper/*`, `lib/whatsapp/*`, `lib/llm/*` |
 
-*Legend: **R** = Responsible, **A** = Accountable, **C** = Consulted, **I** = Informed*
+Neither track touches the other's folder. Both branch off `main` after Phase 0
+merges, and both can merge back independently without conflicts as long as
+neither edits `schema.prisma` again in this phase.
+
+### Phase 2 — Integration (both, ~last day)
+- Wire dashboard (Track A) to show reconciliation status per student (Track B's
+  `RECONCILIATION_ATTEMPT` data) — small, reviewed PR touching both areas.
+- End-to-end test: application → approval → mentor assignment → skill log →
+  employment record → simulated 6-month reconciliation cycle.
+- Update `progress.md` and `bugs.md` together.
+
+## Git workflow (to keep this conflict-free in practice)
+
+- Branch naming: `track-a/<feature>` and `track-b/<feature>`.
+- Small, frequent PRs against `main`, not one giant branch per person.
+- Anyone touching a shared file (`schema.prisma`, `lib/auth`, `lib/validation`)
+  outside Phase 0 must open a PR and get the other person's review first.
+- `progress.md` is updated by whoever finishes a task, same day.
+
+## Consent & compliance owner
+
+Both are jointly responsible for making sure the consent checkbox (PRD §6) ships
+before any real beneficiary is scraped or messaged — this is a hard gate, not a
+nice-to-have, given it involves personal data and unsolicited WhatsApp contact.
