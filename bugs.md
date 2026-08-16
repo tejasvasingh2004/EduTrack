@@ -34,6 +34,11 @@
 
 ---
 
+## 🟡 Open Issues
+- **Missing Database configuration**: The application crashes with `Environment variable not found: DATABASE_URL` because no `.env` file was set up and no local PostgreSQL database was initialized. Pending user configuration and `npx prisma db push`.
+
+---
+
 ## ✅ Resolved Issues
 *No issues resolved yet.*
 
